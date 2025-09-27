@@ -13,14 +13,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // CORS Configuration
-app.use(cors(
-//   {
-//   origin: '*', // Your domain
-//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed methods
-//   allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
-//   credentials: true // Allow credentials if needed
-// }
-));
+app.use(cors());
+
 // Email transporter setup
 const transporter = nodemailer.createTransport({
   // service: "gmail",
