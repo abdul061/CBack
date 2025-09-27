@@ -159,16 +159,18 @@ app.get("/api/searchstudent", async (req, res) => {
 //login for admin
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
-
+  console.log(email)
+  console.log(password)
   try {
     // 🔒 Replace this with hashed password check (bcrypt) in real apps
     const user = {email: "123", password:"123"}
 
-    if (!user =={email, password}) {
-      return res.json({ success: false, message: "Invalid email or password" });
-    }
+ if (user.email !== email || user.password !== password) {
+  return res.json({ success: false, message: "Invalid email or password" });
+}
 
-    res.json({ success: true, message: "Login successful", user });
+res.json({ success: true, message: "Login successful", user });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: "Server error" });
@@ -176,3 +178,4 @@ app.post("/api/login", async (req, res) => {
 });
 // Start the server
 module.exports = app;
+// app.listen(5000, ()=> console.log("connected"))
