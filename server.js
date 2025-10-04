@@ -129,28 +129,31 @@ app.get('/api/students', async (req, res) => {
   res.json(all);
 });
 
-// Search student by roll number
-app.get("/api/searchstudent", async (req, res) => {
+//search student
+app.post("/api/searchStudent", async (req, res) => {
   try {
-    const { rollNo, dob } = req.query;
+    const { rollNo, dob } = req.body;
 
-    if (!rollNo || !dob) {
-      return res.status(400).json({ error: "Roll No and DOB are required" });
+    const student = await students.findOne({ rollNo });
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
     }
 
-    const student = await students.findOne({ rollNo, dob });
+    // Compare only the date part
+    const inputDate = new Date(dob).toISOString().split("T")[0];
+    const studentDOB = student.dob.toISOString().split("T")[0];
 
-    if (!student) {
-      return res.status(404).json({ error: "Student not found" });
+    if (inputDate !== studentDOB) {
+      return res.status(404).json({ message: "Roll number found but DOB mismatch" });
     }
 
     res.json(student);
-  } catch (error) {
-    console.error("Error searching student:", error);
-    res.status(500).json({ error: "Server error" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 });
-//login for admin
+
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
   console.log(email)
@@ -171,5 +174,5 @@ res.json({ success: true, message: "Login successful", user });
   }
 });
 // Start the server
-module.exports = app;
-// app.listen(5000, ()=> console.log("connected"))
+//module.exports = app;
+app.listen(5000, ()=> console.log("connected"))

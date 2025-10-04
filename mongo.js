@@ -29,19 +29,38 @@ const mailsubscription = mongoose.Schema({
         type:String
     }
 });
-const studentSchema = new mongoose.Schema({
-  rollNo: String,
-  name: String,
-  dob: String,
-  course: String,
-  internship: String,
-  duration: String,
-  email: String,
-  phone: String,
-  address: String,
-  mentor: String,
-  remarks: String,
-});
+const studentSchema = new mongoose.Schema(
+  {
+    rollNo: {
+      type: String,
+      required: true,
+      unique: true, // ✅ Roll number should be unique
+      trim: true,
+    },
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    dob: {
+      type: Date,
+      required: true,
+    },
+    course: {
+      type: String,
+      required: true,
+    },
+    internship: {
+      type: [String], // ✅ Array of strings for checklist items
+      required: true,
+    },
+    duration: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
 const students = mongoose.model('Students', studentSchema)
 const subscription = mongoose.model('subscription',mailsubscription);
 const collection = mongoose.model('collection',newSchema);
