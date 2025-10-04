@@ -153,6 +153,16 @@ app.post("/api/searchStudent", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+// GET all students
+app.get("/api/getAllStudents", async (req, res) => {
+  try {
+    const studentsList = await students.find({}).sort({ name: 1 }); // optional: sort by name
+    res.json(studentsList);
+  } catch (err) {
+    console.error("Error fetching all students:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
