@@ -184,5 +184,5 @@ res.json({ success: true, message: "Login successful", user });
   }
 });
 // Start the server
-//module.exports = app;
-app.listen(5000, ()=> console.log("connected"))
+module.exports = app;
+//app.listen(5000, ()=> console.log("connected"))
