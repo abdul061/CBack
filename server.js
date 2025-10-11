@@ -183,6 +183,20 @@ res.json({ success: true, message: "Login successful", user });
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
+//delete student
+app.delete("/api/deletestudent/:id", async (req, res) => {
+  try {
+    const deletedStudent = await students.findByIdAndDelete(req.params.id);
+    if (!deletedStudent) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+    res.json({ success: true, message: "Student deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting student:", err);
+    res.status(500).json({ error: "Failed to delete student" });
+  }
+});
+
 // Start the server
-module.exports = app;
+ module.exports = app;
 //app.listen(5000, ()=> console.log("connected"))
