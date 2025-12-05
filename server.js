@@ -197,6 +197,43 @@ app.delete("/api/deletestudent/:id", async (req, res) => {
   }
 });
 
+app.put("/api/updatestudent", async (req, res) => {
+  try {
+    const { rollNo, dob, name, course, duration, internship } = req.body;
+
+    if (!rollNo || !dob) {
+      return res.status(400).json({ error: "Roll number and DOB are required." });
+    }
+
+    // Convert frontend dob "YYYY-MM-DD" into real JS Date
+    const dobDate = new Date(dob);
+    if (isNaN(dobDate.getTime())) {
+      return res.status(400).json({ error: "Invalid DOB format." });
+    }
+
+    // Find and update student
+    const updatedStudent = await students.findOneAndUpdate(
+      { rollNo, dob: dobDate },   // match using rollNo + dob
+      {
+        name,
+        course,
+        duration,
+        internship,
+      },
+      { new: true } // return updated doc
+    );
+
+    if (!updatedStudent) {
+      return res.status(404).json({ error: "Student not found." });
+    }
+
+    return res.json({ message: "Student updated successfully!", student: updatedStudent });
+
+  } catch (err) {
+    console.error("Update error:", err);
+    return res.status(500).json({ error: "Server error while updating student." });
+  }
+});
 // Start the server
  module.exports = app;
 //app.listen(5000, ()=> console.log("connected"))
