@@ -234,6 +234,17 @@ app.put("/api/updatestudent", async (req, res) => {
     return res.status(500).json({ error: "Server error while updating student." });
   }
 });
+
+app.post("/api/contact", (req, res) => {
+  const { name, email, phone, message } = req.body;
+
+  console.log("New Contact Message:");
+  console.log(name, email, phone, message);
+
+  // Later you can save to DB here
+
+  res.json({ success: true });
+});
 // Start the server
  module.exports = app;
-//app.listen(5000, ()=> console.log("connected"))
+app.listen(5000, ()=> console.log("connected"))
