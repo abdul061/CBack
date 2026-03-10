@@ -17,19 +17,19 @@ app.use(cors());
 
 // Email transporter setup
 const transporter = nodemailer.createTransport({
-  // service: "gmail",
-  // auth: {
-  //   user: process.env.Email_user,
-  //   pass: process.env.Email_pass,
-  // },
+  service: "gmail",
+  auth: {
+    user: process.env.Email_user,
+    pass: process.env.Email_pass,
+  },
 });
 // Verify mail configuration
 transporter.verify((error, success) => {
-  // if (error) {
-  //   console.log("Error occurred while sending mail", error);
-  // } else {
-  //   console.log("Mail setup verified successfully", success);
-  // }
+  if (error) {
+    console.log("Error occurred while sending mail", error);
+  } else {
+    console.log("Mail setup verified successfully", success);
+  }
 });
 // Contact Form Route
 app.post("/contact", async (req, res) => {
@@ -68,49 +68,58 @@ app.post("/contact", async (req, res) => {
     });
   }
 });
-// Subscription Route
-app.post("/subscribe", async (req, res) => {
 
-  console.log('Received a subscription request:', req.body); 
-  const { email } = req.body;
+// ===============================
+// ENROLL FORM MAIL
+// ===============================
 
-  if (!email) {
-    return res.status(400).json({ message: 'Email is required' });
-  }
-
+app.post("/api/enroll", async (req, res) => {
   try {
-    const existingSubscription = await subscription.findOne({ email });
-    if (existingSubscription) {
-      return res.status(200).json({ message: 'You are already supporting Adiz.' });
+
+    const { name, phone, course } = req.body;
+
+    if (!name || !phone) {
+      return res.status(400).json({
+        success: false,
+        message: "Name and phone are required"
+      });
     }
 
-    const newSubscription = new subscription({ email });
-    await newSubscription.save();
+    const mailOptions = {
+      from: process.env.Email_user,
+      to: process.env.Email_user,
+      subject: "New Course Enrollment",
+      html: `
+        <h2>New Enrollment Request</h2>
 
-    res.status(200).json({ message: 'Thanks for supporting Coderz academy!' });
-  } catch (error) {
-    console.error('Error handling subscription:', error);
-    res.status(500).json({ message: 'An error occurred. Please try again.' });
-  }
+        <p><b>Name:</b> ${name}</p>
+        <p><b>Phone:</b> ${phone}</p>
+        <p><b>Course:</b> ${course || "Not specified"}</p>
 
-  const mailOptions = {
-    from: process.env.Email_user,
-    to: email,
-    subject: `Thanks for subscribing to Adiz Codez`,
-    text: `Thank you for subscribing to Adiz! We're thrilled to have you onboard.\n\nWelcome aboard, and thank you for choosing Adiz!\n\nBest regards,\nThe Adiz Team`,
-  };
+        <hr>
 
-  try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log("Subscription email sent:", info.response);
-  } catch (error) {
-    console.error("Error sending subscription email:", error);
-    res.status(500).json({
-      message: "There was an error sending your message. Please try again later.",
+        <p>Submitted from website enrollment form.</p>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.json({
+      success: true,
+      message: "Enrollment mail sent successfully"
     });
+
+  } catch (error) {
+
+    console.error("Enrollment mail error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to send enrollment mail"
+    });
+
   }
 });
-
 //Add Students
 app.post('/api/addstudent', async (req, res) => {
   try {
