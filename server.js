@@ -244,15 +244,47 @@ app.put("/api/updatestudent", async (req, res) => {
   }
 });
 
-app.post("/api/contact", (req, res) => {
-  const { name, email, phone, message } = req.body;
+app.post("/api/contact", async (req, res) => {
+  try {
+    const { name, email, phone, message } = req.body;
 
-  console.log("New Contact Message:");
-  console.log(name, email, phone, message);
+    if (!name || !phone) {
+      return res.status(400).json({
+        success: false,
+        message: "Name and phone are required"
+      });
+    }
 
-  // Later you can save to DB here
+    const mailOption = {
+      from: process.env.Email_user,
+      to: process.env.Email_user,
+      subject: "New Student Contact",
+      html: `
+        <h2>New Student Contact Request</h2>
 
-  res.json({ success: true });
+        <p><b>Name:</b> ${name}</p>
+        <p><b>Email:</b> ${email}</p>
+        <p><b>Phone:</b> ${phone}</p>
+        <p><b>Message:</b> ${message || "Not specified"}</p>
+
+        <hr>
+        <p>Submitted from website contact form.</p>
+      `
+    };
+
+    await transporter.sendMail(mailOption);
+
+    return res.json({
+      success: true,
+      message: "Contact Message sent successfully"
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to send enrollment mail"
+    });
+  }
 });
 // Start the server
  module.exports = app;
