@@ -1,9 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
-const { collection, subscription ,students } = require("./mongo");
-const connectDB = require("./db");
-
+const { collection, subscription ,students } = require("../mongo");
+const connectDB = require("../db");
+const serverless = require("serverless-http");
 require("dotenv").config();
 
 const app = express();
@@ -290,5 +290,5 @@ app.post("/api/contact", async (req, res) => {
   }
 });
 // Start the server
- module.exports = app;
+module.exports = serverless(app);
 app.listen(5000, ()=> console.log("connected"))
