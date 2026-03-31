@@ -4,13 +4,6 @@ const nodemailer = require("nodemailer");
 const { collection, subscription ,students } = require("./mongo");
 const connectDB = require("./db");
 
-module.exports = async (req, res) => {
-  await connectDB(); // 🔥 MUST
-
-  const student = await students.findOne({ rollNo: req.body.rollNo });
-
-  res.json(student);
-};
 require("dotenv").config();
 
 const app = express();
@@ -83,7 +76,7 @@ app.post("/contact", async (req, res) => {
 
 app.post("/api/enroll", async (req, res) => {
   try {
-
+    await connectDB();
     const { name, phone, course } = req.body;
 
     if (!name || !phone) {
@@ -149,6 +142,7 @@ app.get('/api/students', async (req, res) => {
 //search student
 app.post("/api/searchStudent", async (req, res) => {
   try {
+    await connectDB();
     const { rollNo, dob } = req.body;
 
     const student = await students.findOne({ rollNo });
@@ -182,6 +176,7 @@ app.get("/api/getAllStudents", async (req, res) => {
 });
 
 app.post("/api/login", async (req, res) => {
+  await connectDB(); // Ensure DB connection is established
   const { email, password } = req.body;
   console.log(email)
   console.log(password)
