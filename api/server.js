@@ -7,14 +7,33 @@ const serverless = require("serverless-http");
 require("dotenv").config();
 
 const app = express();
-const PORT = process.env.X_ZOHO_CATALYST_LISTEN_PORT || 5000;
+
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+}));
+
+app.options("*", cors());
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// ✅ Handle preflight manually (important for Vercel)
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+
+  next();
+});
 
 // Middleware to parse incoming JSON data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// CORS Configuration
-app.use(cors());
 
 // Email transporter setup
 const transporter = nodemailer.createTransport({
