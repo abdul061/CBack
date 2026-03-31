@@ -2,7 +2,15 @@ const express = require("express");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
 const { collection, subscription ,students } = require("./mongo");
+const connectDB = require("./db");
 
+module.exports = async (req, res) => {
+  await connectDB(); // 🔥 MUST
+
+  const student = await students.findOne({ rollNo: req.body.rollNo });
+
+  res.json(student);
+};
 require("dotenv").config();
 
 const app = express();
